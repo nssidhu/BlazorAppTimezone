@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BlazorAppTimezone.Server.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     public class WeatherForecastController : ControllerBase
     {
         private static readonly string[] Summaries = new[]
@@ -19,20 +19,37 @@ namespace BlazorAppTimezone.Server.Controllers
             _logger = logger;
         }
 
+
+
+        [Route("GetTimeZonetime/{TimeZone}")]
         [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        public TimezoneDetails GetTimeZonetime(string TimeZone)
         {
-            var timezoneLocation = TimeZoneInfo.FindSystemTimeZoneById("America/Chicago");
+            var _timeZone = Uri.UnescapeDataString(TimeZone);
+            //TimeZone = "America/Chicago";
+            TimeZoneInfo timezoneID = TimeZoneInfo.FindSystemTimeZoneById(_timeZone);
 
-            var timeAtLcoation = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timezoneLocation);
+            DateTimeOffset timeAtLcoation = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timezoneID);
 
-            return Enumerable.Range(1, 5).Select(index => new WeatherForecast
-            {
-                Date = DateTime.Now.AddDays(index),
-                TemperatureC = Random.Shared.Next(-20, 55),
-                Summary = Summaries[Random.Shared.Next(Summaries.Length)]
-            })
-            .ToArray();
+
+            var dtoffsettime = timeAtLcoation;
+            Console.WriteLine(dtoffsettime.ToString("yyyy-MM-dd HH:mm:ss tt \"GMT\"zzz"));
+
+            DateTimeOffset val = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, timezoneID.StandardName);
+            DateTimeOffset val2 = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, timezoneID.Id);
+
+
+
+            var timezoneDetails = new TimezoneDetails();
+            timezoneDetails.TimeAtTimezone = TimeZone;
+            timezoneDetails.TimezoneID = timezoneID.Id;
+            timezoneDetails.TimeZoneDisplayName = timezoneID.DisplayName;
+            timezoneDetails.TimeAtTimezone = timeAtLcoation.ToString("yyyy-MM-dd HH:mm:ss tt \"GMT\"zzz"); ;
+            timezoneDetails.UTCTime = DateTime.UtcNow.ToString();
+            return timezoneDetails;
+
+
+
         }
     }
 }

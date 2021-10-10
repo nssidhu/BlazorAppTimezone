@@ -1,6 +1,7 @@
 ﻿@page "/fetchdata"
 @using BlazorAppTimezone.Shared
 @inject HttpClient Http
+@using Microsoft.AspNetCore.WebUtilities
 
 <PageTitle>Weather forecast</PageTitle>
 
@@ -8,40 +9,42 @@
 
 <p>This component demonstrates fetching data from the server.</p>
 
-@if (forecasts == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Temp. (C)</th>
-                <th>Temp. (F)</th>
-                <th>Summary</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var forecast in forecasts)
-            {
-                <tr>
-                    <td>@forecast.Date.ToShortDateString()</td>
-                    <td>@forecast.TemperatureC</td>
-                    <td>@forecast.TemperatureF</td>
-                    <td>@forecast.Summary</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+ <div class="row">
+    <div class="col col-auto">
+        <div class="form-group">
+            <label for="firstName" class="control-label">Enter Time zone</label>
+          
+             <input type="text"  id="firstName" class="form-control" @bind="@_timeZone"/>
+           
+            @*<input id="firstName" type="text" name="firstname" placeholder="First Name" class="form-control" style="width:25ch;">*@
+        </div>
+    </div>
+</div>
+<span>TimeZone DisplayName : </span><span>@timeZoneDettail.TimeZoneDisplayName</span>
+<br />
+<span>TimeZone Name : </span><span>@timeZoneDettail.TimeZoneName</span>
+<br />
+<span>Timezone ID : </span><span>@timeZoneDettail.TimezoneID</span>
+<br />
+<span>Time at Time Zone : </span><span>@timeZoneDettail.TimeAtTimezone</span>
+<br />
+<span>UTC Time : </span><span>@timeZoneDettail.UTCTime</span>
+
 
 @code {
     private WeatherForecast[]? forecasts;
+    private TimezoneDetails timeZoneDettail = new TimezoneDetails();
+    private string _timeZone = "America/Chicago";
 
     protected override async Task OnInitializedAsync()
     {
-        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
+        //forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("WeatherForecast");
+
+        //timeZoneDettail = await Http.GetFromJsonAsync<TimezoneDetails>($"WeatherForecast");
+     
+        var _escapedTimezone = Uri.EscapeDataString(_timeZone);
+       
+        timeZoneDettail = await Http.GetFromJsonAsync<TimezoneDetails>($"/api/WeatherForecast/GetTimeZonetime/{_escapedTimezone}");
+        StateHasChanged();
     }
 }
