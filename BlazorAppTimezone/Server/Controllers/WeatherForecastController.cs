@@ -38,6 +38,8 @@ namespace BlazorAppTimezone.Server.Controllers
             DateTimeOffset val = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, timezoneID.StandardName);
             DateTimeOffset val2 = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, timezoneID.Id);
 
+            string Windowstimezone = "";
+            TimeZoneInfo.TryConvertIanaIdToWindowsId("America/Chicago", out Windowstimezone);
 
 
             var timezoneDetails = new TimezoneDetails();
@@ -46,6 +48,7 @@ namespace BlazorAppTimezone.Server.Controllers
             timezoneDetails.TimeZoneDisplayName = timezoneID.DisplayName;
             timezoneDetails.TimeAtTimezone = timeAtLcoation.ToString("yyyy-MM-dd HH:mm:ss tt \"GMT\"zzz"); ;
             timezoneDetails.UTCTime = DateTime.UtcNow.ToString();
+            timezoneDetails.ConvertedTimezone = Windowstimezone;
             return timezoneDetails;
 
 

@@ -20,5 +20,7 @@ namespace BlazorAppTimezone.Shared
         public string TimeAtTimezone { get; set; }
 
         public string UTCTime { get; set; }
+
+        public string ConvertedTimezone { get; set; }
     }
 }
