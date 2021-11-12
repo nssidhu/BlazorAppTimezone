@@ -20,17 +20,17 @@
         </div>
     </div>
 </div>
-<span><b>TimeZone DisplayName : </b></span><span>@timeZoneDettail.TimeZoneDisplayName</span>
+<span><b>TimeZone DisplayName : </b></span><span>@timeZoneDettail?.TimeZoneDisplayName</span>
 <br />
-<span><b>TimeZone Name : </b></span><span>@timeZoneDettail.TimeZoneName</span>
+<span><b>TimeZone Name : </b></span><span>@timeZoneDettail?.TimeZoneName</span>
 <br />
-<span><b>Converted TimeZone : </b></span><span>@timeZoneDettail.ConvertedTimezone</span>
+<span><b>Converted TimeZone : </b></span><span>@timeZoneDettail?.ConvertedTimezone</span>
 <br />
-<span><b>Timezone ID : </b></span><span>@timeZoneDettail.TimezoneID</span>
+<span><b>Timezone ID : </b></span><span>@timeZoneDettail?.TimezoneID</span>
 <br />
-<span><b>Time at Time Zone : </b></span><span>@timeZoneDettail.TimeAtTimezone</span>
+<span><b>Time at Time Zone : </b></span><span>@timeZoneDettail?.TimeAtTimezone</span>
 <br />
-<span><b>UTC Time : </b></span><span>@timeZoneDettail.UTCTime</span>
+<span><b>UTC Time : </b></span><span>@timeZoneDettail?.UTCTime</span>
 
 <br/>
 <br />
@@ -38,7 +38,7 @@
 
 @code {
     private WeatherForecast[]? forecasts;
-    private TimezoneDetails timeZoneDettail = new TimezoneDetails();
+    private TimezoneDetails? timeZoneDettail = new TimezoneDetails();
     private string _timeZone = "America/Chicago";
 
     private async Task GetData()
