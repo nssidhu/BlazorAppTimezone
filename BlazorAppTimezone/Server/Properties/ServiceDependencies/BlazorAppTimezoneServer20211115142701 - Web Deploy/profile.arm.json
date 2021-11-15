@@ -21,7 +21,7 @@
     },
     "resourceName": {
       "type": "string",
-      "defaultValue": "BlazorAppTimezoneServer20211114202356",
+      "defaultValue": "BlazorAppTimezoneServer20211115142701",
       "metadata": {
         "description": "Name of the main resource to be created by this template."
       }
