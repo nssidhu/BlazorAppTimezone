@@ -69,6 +69,9 @@ app.UseWebAssemblyDebugging();
 app.UseSwagger();
 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "TimeZoneAPI"));
 
+//https://edi.wang/post/2020/4/29/my-aspnet-core-route-debugger-middleware
+app.UseRouteDebugger(); // to use /route-debugger
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -99,17 +102,17 @@ app.UseRouting();
 app.UseEndpoints(endpoints =>
 {
    
-    endpoints.MapControllers(); 
-    endpoints.MapControllerRoute(
-       name: "default",
-       pattern: "{controller=Home}/{action=Index}/{id?}");
+    endpoints.MapControllers(); //This will map the Attribute Routing that is decorated inside the controller
+   
+    //endpoints.MapControllerRoute(
+    //   name: "default",
+    //   pattern: "api/{controller=Home}/{action=Index}/{id?}");
 
     endpoints.MapFallbackToFile("index.html");
     
 });
 
 app.Run();
-
 
 
 
