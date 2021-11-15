@@ -25,8 +25,11 @@ namespace BlazorAppTimezone.Server.Controllers
         [HttpGet]
         public IActionResult GetTimeZonetime(string TimeZone)
         {
+            var timezoneDetails = new TimezoneDetails();
             try
             {
+                              
+              
                 var _timeZone = Uri.UnescapeDataString(TimeZone);
                 //TimeZone = "America/Chicago";
                 TimeZoneInfo timezoneID = TimeZoneInfo.FindSystemTimeZoneById(_timeZone);
@@ -44,7 +47,7 @@ namespace BlazorAppTimezone.Server.Controllers
                 TimeZoneInfo.TryConvertIanaIdToWindowsId("America/Chicago", out Windowstimezone);
 
 
-                var timezoneDetails = new TimezoneDetails();
+               
                 timezoneDetails.TimeAtTimezone = TimeZone;
                 timezoneDetails.TimezoneID = timezoneID.Id;
                 timezoneDetails.TimeZoneDisplayName = timezoneID.DisplayName;
@@ -55,7 +58,10 @@ namespace BlazorAppTimezone.Server.Controllers
             }
             catch (Exception e)
             {
-               return BadRequest(e.GetBaseException().ToString());
+                var er = new CustomError();
+                er.Message = e.GetBaseException().Message;
+
+                return BadRequest(er);
             }
           
            

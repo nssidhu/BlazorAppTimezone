@@ -2,6 +2,8 @@
 @using BlazorAppTimezone.Shared
 @inject HttpClient Http
 @using Microsoft.AspNetCore.WebUtilities
+@using System.Text.Json
+@using System.Net
 
 <PageTitle>Weather forecast</PageTitle>
 
@@ -36,18 +38,85 @@
 <br />
 <button class="btn btn-primary" @onclick="GetData">Get New Value</button>
 
+@if(!string.IsNullOrEmpty(_errorMessage))
+{
+  <div class="alert alert-danger" role="alert">
+   @_errorMessage
+  </div>
+}
+
+
 @code {
     private WeatherForecast[]? forecasts;
     private TimezoneDetails? timeZoneDettail = new TimezoneDetails();
     private string _timeZone = "America/Chicago";
+    private string _errorMessage = "";
 
     private async Task GetData()
     {
+        try
+        {
+            _errorMessage = "";
+            var _escapedTimezone = Uri.EscapeDataString(_timeZone);
 
-        var _escapedTimezone = Uri.EscapeDataString(_timeZone);
+            //timeZoneDettail = await Http.GetFromJsonAsync<TimezoneDetails>($"/api/WeatherForecast/GetTimeZonetime/{_escapedTimezone}");
 
-        timeZoneDettail = await Http.GetFromJsonAsync<TimezoneDetails>($"/api/WeatherForecast/GetTimeZonetime/{_escapedTimezone}");
-        StateHasChanged();
+            using var httpResponse = await Http.GetAsync($"/api/WeatherForecast/GetTimeZonetime/{_escapedTimezone}");
+
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                //Blazor does return 200 for routes that does not exists, in that case it returns HTML and not json
+                //We are dtectecting to make sure we did recieve json object in our 200 OK response
+                if (httpResponse.Content is object && httpResponse.Content.Headers.ContentType.MediaType == "application/json")
+                {
+                    //In case you need to have control over deserilization use the following
+                    // var content = await httpResponse.Content.ReadAsStringAsync();
+
+                    //timeZoneDettail = JsonSerializer.Deserialize<TimezoneDetails>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
+
+                    timeZoneDettail = await httpResponse.Content.ReadFromJsonAsync<TimezoneDetails>();
+                }
+                else
+                {
+                    _errorMessage = "Route Not Found";
+                }
+
+            }
+            else
+            {
+                //In case you want greater control over status code use the following
+                //var statusCode = httpResponse.StatusCode;
+                //switch (statusCode)
+                //{
+                //    case HttpStatusCode.NotFound:
+                //        Console.WriteLine("Not Found Error");
+                //            //_navManager.NavigateTo("/404"); 
+                //            break;
+                //        case HttpStatusCode.Unauthorized: 
+                //         Console.WriteLine("unauthorized");
+                //            //_navManager.NavigateTo("/unauthorized"); 
+                //            break;
+                //        default: 
+                //          Console.WriteLine("500 error");
+                //            //_navManager.NavigateTo("/500"); 
+                //            break;
+                //    }
+                var error  = await httpResponse.Content.ReadFromJsonAsync<CustomError>();
+                _errorMessage = error.Message;
+
+            }
+
+        }
+        catch(Exception e)
+        {
+            _errorMessage = e.GetBaseException().ToString();
+        }
+        finally
+        {
+             StateHasChanged();
+        }
+
+       
     }
     protected override async Task OnInitializedAsync()
     {

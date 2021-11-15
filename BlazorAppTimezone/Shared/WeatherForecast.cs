@@ -11,6 +11,11 @@ namespace BlazorAppTimezone.Shared
         public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
     }
 
+    public class CustomError
+    {
+        public string Message { get; set; }
+    }
+
     public class TimezoneDetails
     {
         public string? TimeZoneName { get; set; }
