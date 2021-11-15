@@ -4,6 +4,7 @@
 @using Microsoft.AspNetCore.WebUtilities
 @using System.Text.Json
 @using System.Net
+@using System.Text
 
 <PageTitle>Weather forecast</PageTitle>
 
@@ -52,6 +53,23 @@
     private string _timeZone = "America/Chicago";
     private string _errorMessage = "";
 
+    private async Task PostData()
+    {
+        //This is sample method not used anywhere
+
+         var jsonSerializerOptions
+                        = new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true,
+                            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                        };
+
+         var jsonContent = JsonSerializer.Serialize(timeZoneDettail, jsonSerializerOptions);
+        using var httpContent = new StringContent  (jsonContent, Encoding.UTF8, "application/json");
+ 
+        using var response = await Http.PostAsync("posts", httpContent);
+    }
+
     private async Task GetData()
     {
         try
@@ -71,8 +89,15 @@
                 {
                     //In case you need to have control over deserilization use the following
                     // var content = await httpResponse.Content.ReadAsStringAsync();
+                    var jsonSerializerOptions
+                        = new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true,
+                            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                        };
 
                     //timeZoneDettail = JsonSerializer.Deserialize<TimezoneDetails>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
+                    //timeZoneDettail = JsonSerializer.Deserialize<TimezoneDetails>(content, jsonSerializerOptions)
 
                     timeZoneDettail = await httpResponse.Content.ReadFromJsonAsync<TimezoneDetails>();
                 }
