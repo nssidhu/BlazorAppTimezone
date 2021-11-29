@@ -21,7 +21,7 @@ namespace BlazorAppTimezone.Server.Controllers
 
 
 
-        [Route("GetTimeZonetime/{TimeZone}")]
+        [Route("GetTimeZonetime/{*TimeZone}")]
         [HttpGet]
         public IActionResult GetTimeZonetime(string TimeZone)
         {
@@ -65,6 +65,54 @@ namespace BlazorAppTimezone.Server.Controllers
             }
           
            
+
+        }
+
+
+        [Route("GetFixedTimeZonetime")]
+        [HttpGet]
+        public IActionResult GetFixedTimeZonetime()
+        {
+            var timezoneDetails = new TimezoneDetails();
+            try
+            {
+
+
+                var _timeZone = Uri.UnescapeDataString("America/Chicago");
+                //TimeZone = "America/Chicago";
+                TimeZoneInfo timezoneID = TimeZoneInfo.FindSystemTimeZoneById(_timeZone);
+
+                DateTimeOffset timeAtLcoation = TimeZoneInfo.ConvertTimeFromUtc(DateTime.UtcNow, timezoneID);
+
+
+                var dtoffsettime = timeAtLcoation;
+                Console.WriteLine(dtoffsettime.ToString("yyyy-MM-dd HH:mm:ss tt \"GMT\"zzz"));
+
+                DateTimeOffset val = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, timezoneID.StandardName);
+                DateTimeOffset val2 = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTime.UtcNow, timezoneID.Id);
+
+                string Windowstimezone = "";
+                TimeZoneInfo.TryConvertIanaIdToWindowsId("America/Chicago", out Windowstimezone);
+
+
+
+                timezoneDetails.TimeAtTimezone = _timeZone;
+                timezoneDetails.TimezoneID = timezoneID.Id;
+                timezoneDetails.TimeZoneDisplayName = timezoneID.DisplayName;
+                timezoneDetails.TimeAtTimezone = timeAtLcoation.ToString("yyyy-MM-dd HH:mm:ss tt \"GMT\"zzz"); ;
+                timezoneDetails.UTCTime = DateTime.UtcNow.ToString();
+                timezoneDetails.ConvertedTimezone = Windowstimezone;
+                return Ok(timezoneDetails);
+            }
+            catch (Exception e)
+            {
+                var er = new CustomError();
+                er.Message = e.GetBaseException().Message;
+
+                return BadRequest(er);
+            }
+
+
 
         }
     }
